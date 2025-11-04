@@ -1,11 +1,17 @@
 use yew::prelude::*;
 use pulldown_cmark::{html, Parser};
+use gloo_storage::{LocalStorage, Storage};
+
+const MARKDOWN_KEY: &str = "rust-markdown-studio-content";
 
 #[function_component(App)]
 fn app() -> Html {
-    //
     // Holds the content of the markdown editor.
-    let editor_content = use_state(|| String::from("# Rust Markdown Studio\n\nHello, world!"));
+    // Initialize state from LocalStorage, or use a default if it's not present.
+    let editor_content = use_state(|| {
+        LocalStorage::get(MARKDOWN_KEY)
+            .unwrap_or_else(|_| "# Rust Markdown Studio\n\nHello, world!".to_string())
+    });
 
     // Callback for the textarea's oninput event.
     let on_input = {
@@ -18,6 +24,14 @@ fn app() -> Html {
             }
         })
     };
+
+    // A side effect that saves the content to LocalStorage whenever it changes.
+    {
+        let editor_content = editor_content.clone();
+        use_effect_with(editor_content, |editor_content| {
+            LocalStorage::set(MARKDOWN_KEY, &**editor_content).expect("Failed to save to LocalStorage");
+        });
+    }
 
     // Parse the markdown content and render it to HTML.
     let preview_html = {
