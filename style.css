@@ -1,0 +1,57 @@
+/* Basic styles for the entire application */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+}
+
+/* Main container for the 2-pane layout */
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Editor and Preview Panes */
+.editor-pane, .preview-pane {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    height: calc(100vh - 2rem); /* Full height minus padding */
+}
+
+.editor-pane {
+    border-right: 1px solid #ddd;
+}
+
+/* Textarea for markdown input */
+.editor-pane textarea {
+    width: 100%;
+    height: 100%;
+    border: none;
+    resize: none;
+    outline: none;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* Styles for the rendered HTML preview */
+.preview-pane h1, .preview-pane h2, .preview-pane h3 {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.3em;
+}
+
+.preview-pane code {
+    background-color: #eee;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+.preview-pane pre {
+    background-color: #f8f8f8;
+    padding: 1rem;
+    border-radius: 5px;
+    overflow-x: auto;
+}
