@@ -1,0 +1,8 @@
+# Rust artifacts
+/target
+
+# Trunk build tool
+/dist
+trunk
+trunk-*.tar.gz
+*.log
