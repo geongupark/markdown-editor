@@ -8,10 +8,38 @@ html, body {
     color: #333;
 }
 
-/* Main container for the 2-pane layout */
-.container {
+/* Toolbar styles */
+.toolbar {
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
     display: flex;
+    gap: 0.5rem;
+}
+
+.toolbar button {
+    padding: 0.5rem 1rem;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.toolbar button:hover {
+    background-color: #f0f0f0;
+}
+
+/* Main container for the 2-pane layout */
+.app-wrapper {
+    display: flex;
+    flex-direction: column;
     height: 100vh;
+}
+
+.content-wrapper {
+    display: flex;
+    flex-grow: 1;
 }
 
 /* Editor and Preview Panes */
@@ -19,7 +47,7 @@ html, body {
     flex: 1;
     padding: 1rem;
     overflow-y: auto;
-    height: calc(100vh - 2rem); /* Full height minus padding */
+    height: calc(100vh - 2rem - 48px); /* Adjust height for toolbar */
 }
 
 .editor-pane {

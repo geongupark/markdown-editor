@@ -7,4 +7,18 @@ edition = "2021"
 yew = { version = "0.21", features = ["csr"] }
 pulldown-cmark = "0.10.0"
 gloo-storage = "0.3.0"
-web-sys = { version = "0.3.69", features = ["HtmlTextAreaElement"] }
+web-sys = { version = "0.3.69", features = [
+    "HtmlTextAreaElement",
+    "DragEvent",
+    "File",
+    "FileList",
+    "HtmlAnchorElement",
+    "MouseEvent",
+    "Url",
+    "Blob",
+] }
+gloo-file = { version = "0.3.0", features = ["futures"] }
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3.69"
+wasm-bindgen = "0.2.92"
+yew-hooks = "0.3.2"
