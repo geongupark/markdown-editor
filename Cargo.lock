@@ -487,6 +487,8 @@ version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bbb143cf96099802033e0d4f4963b19fd2e0b728bcf076cd9cf7f6634f092994"
 dependencies = [
+ "futures-channel",
+ "futures-core",
  "js-sys",
  "wasm-bindgen",
 ]
@@ -582,6 +584,22 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.108",
+]
+
+[[package]]
+name = "gus-markdown-editor"
+version = "0.1.0"
+dependencies = [
+ "gloo-file 0.3.0",
+ "gloo-storage 0.3.0",
+ "gloo-timers 0.3.0",
+ "js-sys",
+ "pulldown-cmark",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+ "yew",
+ "yew-hooks",
 ]
 
 [[package]]
@@ -832,21 +850,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ce25767e7b499d1b604768e7cde645d14cc8584231ea6b295e9c9eb22c02e1d1"
 dependencies = [
  "proc-macro2",
-]
-
-[[package]]
-name = "rust-markdown-studio"
-version = "0.1.0"
-dependencies = [
- "gloo-file 0.3.0",
- "gloo-storage 0.3.0",
- "js-sys",
- "pulldown-cmark",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
- "yew",
- "yew-hooks",
 ]
 
 [[package]]
