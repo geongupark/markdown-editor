@@ -590,6 +590,7 @@ dependencies = [
 name = "gus-markdown-editor"
 version = "0.1.0"
 dependencies = [
+ "console_error_panic_hook",
  "gloo-file 0.3.0",
  "gloo-storage 0.3.0",
  "gloo-timers 0.3.0",
