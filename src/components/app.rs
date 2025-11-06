@@ -37,6 +37,7 @@ pub fn app() -> Html {
         LocalStorage::get(THEME_KEY).unwrap_or_else(|_| "light".to_string())
     });
     let dropdown_open = use_state(|| false);
+    let active_view = use_state(|| "editor".to_string());
 
     {
         let theme = theme.clone();
@@ -253,15 +254,52 @@ pub fn app() -> Html {
                 </nav>
             </header>
 
-            <main ref={node} class="flex-grow container mx-auto p-4 grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
-                <div class="h-full">
+            <div class="md:hidden">
+                <div class="flex border-b border-gray-200 dark:border-gray-700">
+                    <button
+                        onclick={{
+                            let active_view = active_view.clone();
+                            Callback::from(move |_| active_view.set("editor".to_string()))
+                        }}
+                        class={classes!(
+                            "flex-1", "py-2", "px-4", "text-center",
+                            if *active_view == "editor" { "bg-gray-200 dark:bg-gray-700" } else { "" }
+                        )}
+                    >
+                        { "Editor" }
+                    </button>
+                    <button
+                        onclick={{
+                            let active_view = active_view.clone();
+                            Callback::from(move |_| active_view.set("preview".to_string()))
+                        }}
+                        class={classes!(
+                            "flex-1", "py-2", "px-4", "text-center",
+                            if *active_view == "preview" { "bg-gray-200 dark:bg-gray-700" } else { "" }
+                        )}
+                    >
+                        { "Preview" }
+                    </button>
+                </div>
+            </div>
+
+            <main ref={node} class="flex-grow container mx-auto p-4 flex flex-col md:grid md:grid-cols-2 md:gap-4 h-full">
+                <div class={classes!(
+                    "h-full",
+                    if *active_view == "editor" { "block" } else { "hidden" },
+                    "md:block"
+                )}>
                      <textarea
                         oninput={on_input}
                         value={(*editor_content).clone()}
                         class="w-full h-full p-4 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
-                <div class="preview-pane h-full p-4 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-y-auto prose dark:prose-invert max-w-none">
+                <div class={classes!(
+                    "preview-pane", "h-full", "p-4", "rounded-lg", "border", "border-gray-300", "dark:border-gray-700", "bg-white", "dark:bg-gray-800", "overflow-y-auto", "prose", "dark:prose-invert", "max-w-none",
+                    if *active_view == "preview" { "block" } else { "hidden" },
+                    "md:block"
+                )}>
                     { Html::from_html_unchecked(preview_html.into()) }
                 </div>
             </main>

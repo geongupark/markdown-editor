@@ -2,6 +2,10 @@
 
 A real-time, browser-based Markdown editor built with Rust and WebAssembly.
 
+## 🚀 Service URL
+
+https://geongupark.github.io/markdown-editor/
+
 ## ✨ Features
 
 *   Live preview of rendered Markdown.
