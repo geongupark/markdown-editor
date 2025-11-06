@@ -1,5 +1,6 @@
 use yew::prelude::*;
 use yew::TargetCast;
+
 use pulldown_cmark::{html as md_html, Parser};
 use gloo_storage::{LocalStorage, Storage};
 use web_sys::{HtmlInputElement, Element, HtmlAnchorElement};
@@ -120,8 +121,6 @@ pub fn app() -> Html {
         use_effect_with(preview_html, move |_| {
             let timeout = Timeout::new(1, move || {
                 let window = web_sys::window().unwrap();
-
-                // Highlight.js
                 if let Ok(hljs) = js_sys::Reflect::get(&window, &"hljs".into()) {
                     if let Ok(highlight_all) = js_sys::Reflect::get(&hljs, &"highlightAll".into()) {
                         if let Some(highlight_all_fn) = highlight_all.dyn_ref::<Function>() {
@@ -241,10 +240,8 @@ pub fn app() -> Html {
                             </div>
                             <button onclick={on_toggle_theme} class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none">
                                 { if *theme == "light" {
-                                    // Sun icon
                                     html! { <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg> }
                                 } else {
-                                    // Moon icon
                                     html! { <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg> }
                                 }}
                             </button>
@@ -255,7 +252,7 @@ pub fn app() -> Html {
 
             <main ref={node} class="flex-grow container mx-auto p-4 grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
                 <div class="h-full">
-                    <textarea
+                     <textarea
                         oninput={on_input}
                         value={(*editor_content).clone()}
                         class="w-full h-full p-4 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
