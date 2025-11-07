@@ -1,13 +1,13 @@
 use yew::prelude::*;
 use yew::TargetCast;
 
-use pulldown_cmark::{html as md_html, Parser};
+use pulldown_cmark::{html as md_html, Options, Parser, Event, Tag, TagEnd};
 use gloo_storage::{LocalStorage, Storage};
 use web_sys::{HtmlInputElement, Element, HtmlAnchorElement};
 use js_sys::Function;
 use gloo_file::File;
 use gloo_file::callbacks::{FileReader, read_as_text};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use wasm_bindgen::{prelude::*, JsCast};
 use yew_hooks::prelude::*;
 use gloo_timers::callback::Timeout;
@@ -111,11 +111,94 @@ pub fn app() -> Html {
         });
     }
 
-    let preview_html = {
-        let parser = Parser::new(&editor_content);
-        let mut html_output = String::new();
-        md_html::push_html(&mut html_output, parser);
-        html_output
+    let (toc, preview_html) = {
+        let content = (*editor_content).clone();
+        let parsed_content = use_memo(
+            content,
+            |content| {
+                let mut options = Options::empty();
+                options.insert(Options::ENABLE_HEADING_ATTRIBUTES);
+
+                let mut toc_items = Vec::new();
+                let mut current_heading = None;
+                let mut html_output = String::new();
+                let mut used_anchors = HashSet::new();
+
+                let parser = Parser::new_ext(content, options);
+                md_html::push_html(
+                    &mut html_output,
+                    parser.map(|event| {
+                        match &event {
+                            Event::Start(Tag::Heading { level, .. }) => {
+                                current_heading = Some((*level, String::new()));
+                            }
+                            Event::Text(text) => {
+                                if let Some((_, current_text)) = &mut current_heading {
+                                    current_text.push_str(text);
+                                }
+                            }
+                            Event::End(TagEnd::Heading(_)) => {
+                                if let Some((level, text)) = current_heading.take() {
+                                    let mut anchor = text
+                                        .to_lowercase()
+                                        .replace(' ', "-")
+                                        .chars()
+                                        .filter(|c| c.is_alphanumeric() || *c == '-')
+                                        .collect::<String>();
+                                    let mut counter = 1;
+                                    let mut unique_anchor = anchor.clone();
+                                    while used_anchors.contains(&unique_anchor) {
+                                        unique_anchor = format!("{}-{}", anchor, counter);
+                                        counter += 1;
+                                    }
+                                    used_anchors.insert(unique_anchor.clone());
+                                    anchor = unique_anchor;
+
+                                    let (li_class, a_class, prefix) = match level {
+                                        pulldown_cmark::HeadingLevel::H1 => (
+                                            "mt-3",
+                                            "font-semibold text-sm text-gray-800 dark:text-gray-200",
+                                            ""
+                                        ),
+                                        pulldown_cmark::HeadingLevel::H2 => (
+                                            "mt-1",
+                                            "text-sm text-gray-600 dark:text-gray-400",
+                                            ""
+                                        ),
+                                        _ => { // H3+
+                                            ("mt-1 ml-4", "text-sm text-gray-600 dark:text-gray-400", ">")
+                                        }
+                                    };
+
+                                    let prefix_span = if prefix.is_empty() {
+                                        "".to_string()
+                                    } else {
+                                        format!("<span class=\"mr-2 text-gray-400 dark:text-gray-500\">{}</span>", prefix)
+                                    };
+
+                                    toc_items.push(format!(
+                                        "<li class=\"flex items-center {}\">{}{}<a href=\"#{}\" class=\"hover:text-blue-500 {}\">{}</a></li>",
+                                        li_class,
+                                        prefix_span,
+                                        "", // no space needed
+                                        anchor,
+                                        a_class,
+                                        text
+                                    ));
+                                }
+                            }
+                            _ => {}
+                        }
+                        event
+                    }),
+                );
+                (
+                    format!("<ul class=\"list-none pl-0\">{}</ul>", toc_items.join("")),
+                    html_output,
+                )
+            },
+        );
+        (*parsed_content).clone()
     };
 
     {
@@ -315,7 +398,13 @@ pub fn app() -> Html {
                     if *active_view == "preview" { "block" } else { "hidden" },
                     "md:block"
                 )}>
-                    { Html::from_html_unchecked(preview_html.into()) }
+                    <div class="toc sticky top-0 bg-white dark:bg-gray-800 p-4 rounded-lg border-b border-gray-300 dark:border-gray-700 mb-4 max-h-48 overflow-y-auto">
+                        <h3 class="text-lg font-semibold mb-2">{ "On this page" }</h3>
+                        { Html::from_html_unchecked(toc.into()) }
+                    </div>
+                    <div class="prose dark:prose-invert max-w-none">
+                        { Html::from_html_unchecked(preview_html.into()) }
+                    </div>
                 </div>
             </main>
 
