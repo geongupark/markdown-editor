@@ -38,6 +38,7 @@ pub fn app() -> Html {
     });
     let dropdown_open = use_state(|| false);
     let active_view = use_state(|| "editor".to_string());
+    let close_timer = use_mut_ref(|| None::<Timeout>);
 
     {
         let theme = theme.clone();
@@ -216,11 +217,24 @@ pub fn app() -> Html {
                             <div class="relative"
                                 onmouseenter={{
                                     let dropdown_open = dropdown_open.clone();
-                                    Callback::from(move |_| dropdown_open.set(true))
+                                    let close_timer = close_timer.clone();
+                                    Callback::from(move |_| {
+                                        if let Some(timer) = close_timer.borrow_mut().take() {
+                                            timer.cancel();
+                                        }
+                                        dropdown_open.set(true);
+                                    })
                                 }}
                                 onmouseleave={{
                                     let dropdown_open = dropdown_open.clone();
-                                    Callback::from(move |_| dropdown_open.set(false))
+                                    let close_timer = close_timer.clone();
+                                    Callback::from(move |_| {
+                                        let dropdown_open = dropdown_open.clone();
+                                        let timer = Timeout::new(200, move || {
+                                            dropdown_open.set(false);
+                                        });
+                                        *close_timer.borrow_mut() = Some(timer);
+                                    })
                                 }}
                             >
                                 <button
