@@ -213,12 +213,17 @@ pub fn app() -> Html {
                             { "Gus Markdown Editor" }
                         </div>
                         <div class="flex items-center space-x-2 sm:space-x-4">
-                            <div class="relative">
+                            <div class="relative"
+                                onmouseenter={{
+                                    let dropdown_open = dropdown_open.clone();
+                                    Callback::from(move |_| dropdown_open.set(true))
+                                }}
+                                onmouseleave={{
+                                    let dropdown_open = dropdown_open.clone();
+                                    Callback::from(move |_| dropdown_open.set(false))
+                                }}
+                            >
                                 <button
-                                    onclick={{
-                                        let dropdown_open = dropdown_open.clone();
-                                        Callback::from(move |_| dropdown_open.set(!*dropdown_open))
-                                    }}
                                     class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none"
                                 >
                                     { "File" }
