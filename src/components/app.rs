@@ -219,10 +219,6 @@ pub fn app() -> Html {
                                         let dropdown_open = dropdown_open.clone();
                                         Callback::from(move |_| dropdown_open.set(!*dropdown_open))
                                     }}
-                                    onblur={{
-                                        let dropdown_open = dropdown_open.clone();
-                                        Callback::from(move |_| dropdown_open.set(false))
-                                    }}
                                     class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none"
                                 >
                                     { "File" }
@@ -230,9 +226,9 @@ pub fn app() -> Html {
                                 { if *dropdown_open {
                                     html! {
                                         <div class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-20">
-                                            <a href="#" onclick={on_import_md.clone()} class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">{ "Import .md" }</a>
-                                            <a href="#" onclick={on_export_md.clone()} class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">{ "Export .md" }</a>
-                                            <a href="#" onclick={on_export_html.clone()} class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">{ "Export .html" }</a>
+                                            <button onclick={on_import_md.clone()} class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">{ "Import .md" }</button>
+                                            <button onclick={on_export_md.clone()} class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">{ "Export .md" }</button>
+                                            <button onclick={on_export_html.clone()} class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">{ "Export .html" }</button>
                                         </div>
                                     }
                                 } else {
