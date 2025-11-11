@@ -37,6 +37,7 @@ pub fn app() -> Html {
         LocalStorage::get(THEME_KEY).unwrap_or_else(|_| "light".to_string())
     });
     let dropdown_open = use_state(|| false);
+    let preview_expanded = use_state(|| false);
     let active_view = use_state(|| "editor".to_string());
     let close_timer = use_mut_ref(|| None::<Timeout>);
 
@@ -385,7 +386,7 @@ pub fn app() -> Html {
                 <div class={classes!(
                     "h-full",
                     if *active_view == "editor" { "block" } else { "hidden" },
-                    "md:block"
+                    if *preview_expanded { "md:hidden" } else { "md:block" }
                 )}>
                      <textarea
                         oninput={on_input}
@@ -394,10 +395,34 @@ pub fn app() -> Html {
                     />
                 </div>
                 <div class={classes!(
-                    "preview-pane", "h-full", "p-4", "rounded-lg", "border", "border-gray-300", "dark:border-gray-700", "bg-white", "dark:bg-gray-800", "overflow-y-auto", "prose", "dark:prose-invert", "max-w-none",
+                    "preview-pane", "relative", "h-full", "p-4", "rounded-lg", "border", "border-gray-300", "dark:border-gray-700", "bg-white", "dark:bg-gray-800", "overflow-y-auto", "prose", "dark:prose-invert", "max-w-none",
                     if *active_view == "preview" { "block" } else { "hidden" },
-                    "md:block"
+                    "md:block",
+                    if *preview_expanded { "md:col-span-2" } else { "" }
                 )}>
+                    <button
+                        onclick={{
+                            let preview_expanded = preview_expanded.clone();
+                            Callback::from(move |_| {
+                                preview_expanded.set(!*preview_expanded);
+                            })
+                        }}
+                        class="absolute top-2 left-2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none z-10"
+                    >
+                        { if *preview_expanded {
+                            html! {
+                                <svg xmlns="http://www.w.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            }
+                        } else {
+                            html! {
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            }
+                        }}
+                    </button>
                     <div class="toc sticky top-0 bg-white dark:bg-gray-800 p-4 rounded-lg border-b border-gray-300 dark:border-gray-700 mb-4 max-h-48 overflow-y-auto">
                         <h3 class="text-lg font-semibold mb-2">{ "On this page" }</h3>
                         { Html::from_html_unchecked(toc.into()) }
