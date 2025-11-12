@@ -155,33 +155,23 @@ pub fn app() -> Html {
                                     used_anchors.insert(unique_anchor.clone());
                                     anchor = unique_anchor;
 
-                                    let (li_class, a_class, prefix) = match level {
+                                    let (li_class, a_class) = match level {
                                         pulldown_cmark::HeadingLevel::H1 => (
-                                            "mt-3",
-                                            "font-semibold text-sm text-gray-800 dark:text-gray-200",
-                                            ""
+                                            "border-l-2 border-sky-500 pl-2",
+                                            "font-semibold text-sky-500"
                                         ),
                                         pulldown_cmark::HeadingLevel::H2 => (
-                                            "mt-1",
-                                            "text-sm text-gray-600 dark:text-gray-400",
-                                            ""
+                                            "border-l-2 border-slate-400 pl-2 ml-2",
+                                            "font-normal text-slate-500 dark:text-slate-400"
                                         ),
                                         _ => { // H3+
-                                            ("mt-1 ml-4", "text-sm text-gray-600 dark:text-gray-400", ">")
+                                            ("border-l-2 border-slate-300 pl-2 ml-4", "font-normal text-slate-500 dark:text-slate-400")
                                         }
                                     };
 
-                                    let prefix_span = if prefix.is_empty() {
-                                        "".to_string()
-                                    } else {
-                                        format!("<span class=\"mr-2 text-gray-400 dark:text-gray-500\">{}</span>", prefix)
-                                    };
-
                                     toc_items.push(format!(
-                                        "<li class=\"flex items-center {}\">{}{}<a href=\"#{}\" class=\"hover:text-blue-500 {}\">{}</a></li>",
+                                        "<li class=\"{}\"><a href=\"#{}\" class=\"block w-full py-1 px-2 rounded-md transition hover:bg-gray-100 dark:hover:bg-gray-700 {}\">{}</a></li>",
                                         li_class,
-                                        prefix_span,
-                                        "", // no space needed
                                         anchor,
                                         a_class,
                                         text
@@ -429,14 +419,28 @@ pub fn app() -> Html {
                     </button>
                     { if *preview_expanded {
                         html! {
-                            <div class="h-full lg:grid lg:grid-cols-12 lg:gap-4 overflow-y-auto lg:overflow-y-hidden">
-                                <div class="lg:col-span-3 lg:border-r border-b lg:border-b-0 border-gray-200 dark:border-gray-700 lg:h-full">
-                                    <div class="toc sticky top-0 p-4 bg-white dark:bg-gray-800 lg:bg-transparent dark:lg:bg-transparent">
+                            <div class="h-full">
+                                // Large screen layout: Grid with two independent scrolling panes
+                                <div class="hidden lg:grid lg:grid-cols-4 h-full">
+                                    <div class="lg:col-span-1 h-full overflow-y-auto border-r border-gray-200 dark:border-gray-700">
+                                        <div class="p-4">
+                                            <h3 class="text-lg font-semibold mb-2">{ "On this page" }</h3>
+                                            { Html::from_html_unchecked(toc.clone().into()) }
+                                        </div>
+                                    </div>
+                                    <div class="lg:col-span-3 h-full overflow-y-auto">
+                                        <div class="prose dark:prose-invert max-w-none p-4">
+                                            { Html::from_html_unchecked(preview_html.clone().into()) }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                // Small screen layout: Single scrolling pane with sticky TOC
+                                <div class="lg:hidden h-full overflow-y-auto">
+                                    <div class="toc sticky top-0 p-4 border-b bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 z-20">
                                         <h3 class="text-lg font-semibold mb-2">{ "On this page" }</h3>
                                         { Html::from_html_unchecked(toc.into()) }
                                     </div>
-                                </div>
-                                <div class="lg:col-span-9 lg:h-full lg:overflow-y-auto">
                                     <div class="prose dark:prose-invert max-w-none p-4">
                                         { Html::from_html_unchecked(preview_html.into()) }
                                     </div>
