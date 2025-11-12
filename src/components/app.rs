@@ -394,16 +394,16 @@ pub fn app() -> Html {
                         class="w-full h-full p-4 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
-                <div class={classes!(
-                    "preview-pane", "relative", "h-full", "rounded-lg", "border", "border-gray-300", "dark:border-gray-700", "bg-white", "dark:bg-gray-800", "prose", "dark:prose-invert", "max-w-none", "transition-all", "duration-300",
-                    if *preview_expanded {
-                        "md:col-span-2"
-                    } else {
-                        "p-4 overflow-y-auto"
-                    },
-                    if *active_view == "preview" { "block" } else { "hidden" },
-                    "md:block"
-                )}>
+                <div
+                    class={classes!(
+                        "preview-pane", "relative", "h-full", "rounded-lg", "border", "border-gray-300", "dark:border-gray-700", "bg-white", "dark:bg-gray-800", "prose", "dark:prose-invert", "max-w-none", "transition-all", "duration-300",
+                        if *preview_expanded { "md:col-span-2" } else { "" },
+                        if !*preview_expanded { "p-4 overflow-y-auto" } else { "" },
+                        if *active_view == "preview" { "block" } else { "hidden" },
+                        "md:block"
+                    )}
+                    data-fullscreen={if *preview_expanded { "true" } else { "false" }}
+                >
                     <button
                         onclick={{
                             let preview_expanded = preview_expanded.clone();
@@ -411,7 +411,7 @@ pub fn app() -> Html {
                                 preview_expanded.set(!*preview_expanded);
                             })
                         }}
-                        class="absolute top-2 left-2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none z-10"
+                        class="absolute top-2 left-2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none z-30" data-test-id="toggle-fullscreen"
                     >
                         { if *preview_expanded {
                             html! {
@@ -429,14 +429,14 @@ pub fn app() -> Html {
                     </button>
                     { if *preview_expanded {
                         html! {
-                            <div class="grid grid-cols-12 gap-4 h-full">
-                                <div class="col-span-3 border-r border-gray-200 dark:border-gray-700 h-full overflow-y-auto">
-                                    <div class="toc sticky top-0 p-4">
+                            <div class="h-full lg:grid lg:grid-cols-12 lg:gap-4 overflow-y-auto lg:overflow-y-hidden">
+                                <div class="lg:col-span-3 lg:border-r border-b lg:border-b-0 border-gray-200 dark:border-gray-700 lg:h-full">
+                                    <div class="toc sticky top-0 p-4 bg-white dark:bg-gray-800 lg:bg-transparent dark:lg:bg-transparent">
                                         <h3 class="text-lg font-semibold mb-2">{ "On this page" }</h3>
                                         { Html::from_html_unchecked(toc.into()) }
                                     </div>
                                 </div>
-                                <div class="col-span-9 h-full overflow-y-auto">
+                                <div class="lg:col-span-9 lg:h-full lg:overflow-y-auto">
                                     <div class="prose dark:prose-invert max-w-none p-4">
                                         { Html::from_html_unchecked(preview_html.into()) }
                                     </div>
