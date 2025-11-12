@@ -384,7 +384,7 @@ pub fn app() -> Html {
 
             <main ref={node} class="flex-grow container mx-auto p-4 flex flex-col md:grid md:grid-cols-2 md:gap-4 h-full">
                 <div class={classes!(
-                    "h-full",
+                    "h-full", "transition-all", "duration-300",
                     if *active_view == "editor" { "block" } else { "hidden" },
                     if *preview_expanded { "md:hidden" } else { "md:block" }
                 )}>
@@ -395,10 +395,14 @@ pub fn app() -> Html {
                     />
                 </div>
                 <div class={classes!(
-                    "preview-pane", "relative", "h-full", "p-4", "rounded-lg", "border", "border-gray-300", "dark:border-gray-700", "bg-white", "dark:bg-gray-800", "overflow-y-auto", "prose", "dark:prose-invert", "max-w-none",
+                    "preview-pane", "relative", "h-full", "rounded-lg", "border", "border-gray-300", "dark:border-gray-700", "bg-white", "dark:bg-gray-800", "prose", "dark:prose-invert", "max-w-none", "transition-all", "duration-300",
+                    if *preview_expanded {
+                        "md:col-span-2"
+                    } else {
+                        "p-4 overflow-y-auto"
+                    },
                     if *active_view == "preview" { "block" } else { "hidden" },
-                    "md:block",
-                    if *preview_expanded { "md:col-span-2" } else { "" }
+                    "md:block"
                 )}>
                     <button
                         onclick={{
@@ -423,13 +427,35 @@ pub fn app() -> Html {
                             }
                         }}
                     </button>
-                    <div class="toc sticky top-0 bg-white dark:bg-gray-800 p-4 rounded-lg border-b border-gray-300 dark:border-gray-700 mb-4 max-h-48 overflow-y-auto">
-                        <h3 class="text-lg font-semibold mb-2">{ "On this page" }</h3>
-                        { Html::from_html_unchecked(toc.into()) }
-                    </div>
-                    <div class="prose dark:prose-invert max-w-none">
-                        { Html::from_html_unchecked(preview_html.into()) }
-                    </div>
+                    { if *preview_expanded {
+                        html! {
+                            <div class="grid grid-cols-12 gap-4 h-full">
+                                <div class="col-span-3 border-r border-gray-200 dark:border-gray-700 h-full overflow-y-auto">
+                                    <div class="toc sticky top-0 p-4">
+                                        <h3 class="text-lg font-semibold mb-2">{ "On this page" }</h3>
+                                        { Html::from_html_unchecked(toc.into()) }
+                                    </div>
+                                </div>
+                                <div class="col-span-9 h-full overflow-y-auto">
+                                    <div class="prose dark:prose-invert max-w-none p-4">
+                                        { Html::from_html_unchecked(preview_html.into()) }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    } else {
+                        html! {
+                            <>
+                                <div class="toc sticky top-0 bg-white dark:bg-gray-800 p-4 rounded-lg border-b border-gray-300 dark:border-gray-700 mb-4 max-h-48 overflow-y-auto">
+                                    <h3 class="text-lg font-semibold mb-2">{ "On this page" }</h3>
+                                    { Html::from_html_unchecked(toc.into()) }
+                                </div>
+                                <div class="prose dark:prose-invert max-w-none">
+                                    { Html::from_html_unchecked(preview_html.into()) }
+                                </div>
+                            </>
+                        }
+                    }}
                 </div>
             </main>
 
